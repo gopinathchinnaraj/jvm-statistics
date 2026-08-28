@@ -1,0 +1,44 @@
+# ── Environment & Secrets ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+application-secret.properties
+application-local.properties
+application-prod.yml
+
+# ── Maven & Backend Builds ──────────────────────────────────────
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+*.class
+*.jar
+*.war
+*.ear
+
+# ── Node.js & Frontend Builds ───────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.nx/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── IDEs & Editors ─────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+
+# ── OS Generated Files ──────────────────────────────────────────
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db

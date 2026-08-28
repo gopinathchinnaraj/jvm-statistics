@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: jvm-query-stats-lab
+
+  # ─────────────────────────────────────────────────────
+  # DataSource — points to the PostgreSQL container
+  # defined in docker-compose.yml.
+  #
+  # Spring Boot auto-configures a HikariCP connection pool
+  # from these settings. HikariCP is the fastest JDBC pool
+  # available for the JVM and is Boot's default.
+  # ─────────────────────────────────────────────────────
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/jvm_stats_lab}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:1234}
+    driver-class-name: org.postgresql.Driver
+
+    hikari:
+      # Pool size: keep it small for a demo app
+      maximum-pool-size: 10
+      minimum-idle: 2
+      # Connection timeout: fail fast if DB is down
+      connection-timeout: 30000
+      # Idle timeout: release connections not used for 10 minutes
+      idle-timeout: 600000
+      pool-name: StatsLabPool
+
+  # ─────────────────────────────────────────────────────
+  # JPA / Hibernate settings
+  # ─────────────────────────────────────────────────────
+  jpa:
+    # postgresql dialect — tells Hibernate to generate
+    # PostgreSQL-specific SQL (e.g., uses SERIAL, RETURNING, etc.)
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        # Format SQL in logs so it's readable
+        format_sql: true
+        # Show SQL queries in the console (useful for learning)
+        show_sql: true
+
+  # ─────────────────────────────────────────────────────
+  # SQL Initialization
+  # Spring Boot will run schema.sql and data.sql from
+  # src/main/resources on startup if mode is set to always.
+  # We set it to never because Docker handles schema init
+  # and data is loaded manually via psql.
+  # ─────────────────────────────────────────────────────
+  sql:
+    init:
+      mode: never
+
+# ─────────────────────────────────────────────────────
+# Server configuration
+# ─────────────────────────────────────────────────────
+server:
+  port: ${PORT:8080}
+  # Allow large payloads (for bulk stats responses)
+  servlet:
+    context-path: /
+
+# ─────────────────────────────────────────────────────
+# Logging
+# ─────────────────────────────────────────────────────
+logging:
+  level:
+    com.statslab: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
