@@ -10,7 +10,7 @@
 > 
 > *A planner is only as good as what it knows about the data. Postgres has spent decades on that: histograms, MCV lists, n-distinct. The JVM data world solved distribution and scale first, which was the right call, and is only now getting to statistics — separately, in every project. OpenSearch is formalizing routing and pruning. Iceberg is designing typed column stats for V4. Parquet carries stats readers barely use. Calcite has the plumbing and no one filling it.*
 > 
-> *The talk opens with one query: fast in Postgres, slow in a search engine, same data. Then it traces where the information gets lost, and covers what a shared substrate might look like — with the upstream work in OpenSearch, Iceberg and Arrow, issue numbers and dead ends included."*
+> *The project opens with one query: fast in Postgres, slow in a search engine, same data. Then it traces where the information gets lost, and covers what a shared substrate might look like — with the upstream work in OpenSearch, Iceberg and Arrow, issue numbers and dead ends included."*
 
 ---
 
