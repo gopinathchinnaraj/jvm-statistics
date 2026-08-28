@@ -75,6 +75,34 @@
 
 ---
 
+### 6. Phase 4 Benchmark — Moderate Skew Query (`country = 'UK'`)
+![Phase 4 Benchmark - UK Comparison](./screenshots/06_benchmark_uk_comparison.png)
+
+* **Query Filter**: `WHERE country = 'UK'` (Actual rows: `40,148` / ~4% of dataset).
+* **Before (Naive Planner)**:
+  - Estimated: `100,000` rows | Actual: `40,148` rows | Estimation Error: `59,852 rows off` ❌
+  - Plan Chosen: `FILTER SCAN` 🟡 (`⚠ Suboptimal decision`).
+* **After (Smart Planner)**:
+  - Estimated: `40,148` rows | Actual: `40,148` rows | Estimation Error: `0 rows off (100% Exact!)` ✅
+  - Plan Chosen: `INDEX SCAN` 🟢 (`✓ Optimal decision`).
+* **Technical Impact**: Proves that MCV stats correctly identify predicates under the 5% threshold ($4.0148\% < 5\%$), automatically switching execution strategy from a partial scan to a targeted index lookup!
+
+---
+
+### 7. Phase 4 Benchmark — Heavy Density Query (`country = 'India'`)
+![Phase 4 Benchmark - India Comparison](./screenshots/07_benchmark_india_comparison.png)
+
+* **Query Filter**: `WHERE country = 'India'` (Actual rows: `699,881` / ~70% of dataset).
+* **Before (Naive Planner)**:
+  - Estimated: `100,000` rows | Actual: `699,881` rows | Estimation Error: `599,881 rows off` ❌
+  - Plan Chosen: `FILTER SCAN` 🟡 (`⚠ Suboptimal decision`).
+* **After (Smart Planner)**:
+  - Estimated: `699,881` rows | Actual: `699,881` rows | Estimation Error: `0 rows off (100% Exact!)` ✅
+  - Plan Chosen: `FULL SCAN` 🔴 (`✓ Optimal decision`).
+* **Technical Impact**: Demonstrates that the Smart Planner isn't just picking `INDEX_SCAN` blindly—it recognizes when 70% of the table matches, correctly selecting `FULL_SCAN` because reading the sequential table pages is faster than random index lookups for 700k records!
+
+---
+
 ## 🔬 Architectural Mapping: Connecting Lab Code to Open-Source Engines
 
 ```
@@ -117,8 +145,9 @@
 | :--- | :--- | :--- | :--- |
 | **Selectivity Logic** | Fixed $1/N$ uniform guess (10%) | MCV lookup / Histogram interpolation | Accurately models non-uniform data skew |
 | **Iceland Query (`country = 'Iceland'`)** | Estimated: 100,000 rows (**99,880 off**) | Estimated: ~120 rows (**0–17 off**) | Prevents reading 1M rows for 120 results |
+| **UK Query (`country = 'UK'`)** | Estimated: 100,000 rows (**59,852 off**) | Estimated: 40,148 rows (**0 off**) | Switches to `INDEX_SCAN` ($4.01\% < 5\%$) |
+| **India Query (`country = 'India'`)** | Estimated: 100,000 rows (**599,881 off**) | Estimated: 699,881 rows (**0 off**) | Chooses `FULL_SCAN` for 70% data density |
 | **Plan Selection** | `FULL_SCAN` 🔴 (850 ms) | `INDEX_SCAN` 🟢 (18 ms) | **47x speedup in query execution** |
-| **India Query (`country = 'India'`)** | Estimated: 100,000 rows (**599,881 off**) | Estimated: 699,881 rows (**0 off**) | Correctly identifies dominant scan cost |
 
 ---
 
