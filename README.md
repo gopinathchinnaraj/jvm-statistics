@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 Talk Abstract & Project Goal
+## 🎯Project Goal
 
 > *"Modern Java applications increasingly sit on top of massive data systems—search engines, analytical stores, data lakes, and distributed query engines. When those systems make a bad query-planning decision, the JVM application often pays the price, with developers having little visibility into why.*
 > 
